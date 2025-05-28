@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STOCK REPORT INSIGHTS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      background-color: #e5ddd5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s ease;
+      overflow: auto; /* ✅ allow scroll */
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+    }
+
+    .chat-window {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #f0f0f0;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+
+    body.dark-mode .chat-window {
+      background-color: #1e1e1e;
+    }
+
+    .chat-header {
+      background-color: #075e54;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .chat-header img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+    }
+
+    .chat-header .name {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .chat-header .header-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-box {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      background-size: cover;
+      background-position: center;
+      border-radius: 10px;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #dcf8c6;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #e2e2e2;
+    }
+
+    body.dark-mode .user {
+      background-color: #a8ed9d;
+    }
+
+    body.dark-mode .bot {
+      background-color: #2d2d2d;
+      color: white;
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 10px 15px;
+      background-color: #f0f0f0;
+      border-top: 1px solid #ccc;
+    }
+
+    body.dark-mode .chat-input-area {
+      background-color: #2a2a2a;
+      border-top: 1px solid #444;
+    }
+
+    .chat-input {
+      flex: 1;
+      border-radius: 25px;
+      padding: 10px 15px;
+      border: none;
+      font-size: 1rem;
+      background-color: white;
+      color: black;
+    }
+
+    body.dark-mode .chat-input {
+      background-color: #3a3a3a;
+      color: white;
+    }
+
+    .send-btn {
+      background-color: #075e54;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 1.2rem;
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn:hover {
+      background-color: #0b8069;
+    }
+
+    .clear-btn {
+      background-color: #dc3545;
+      color: white;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .clear-btn:hover {
+      background-color: #c82333;
+    }
+
+    .mode-toggle-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    body.dark-mode .mode-toggle-btn {
+      background-color: #333;
+    }
+
+    /* ========== Mobile Fixes ========== */
+    @media (max-width: 576px) {
+      .chat-window {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .chat-box {
+        max-height: calc(100vh - 140px); /* header + input area */
+        overflow-y: auto;
+        padding-bottom: 100px; /* space for fixed input */
+      }
+
+      .chat-input-area {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #f0f0f0;
+        z-index: 999;
+      }
+
+      body.dark-mode .chat-input-area {
+        background-color: #2a2a2a;
+      }
+    }
+
+    /* ========== Desktop Only ========== */
+    @media (min-width: 577px) {
+      .chat-box {
+        max-height: unset;
+        height: auto;
+      }
+
+      .chat-input-area {
+        position: relative;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Chat Window -->
+  <div class="chat-window">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="d-flex align-items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI Profile" class="me-2" />
+        <div>
+          <div class="name">STOCK REPORT INSIGHTS AI</div>
+        </div>
+      </div>
+
+      <div class="header-buttons">
+        <form method="POST" action="/clear">
+          <button type="submit" class="clear-btn">Clear Chat</button>
+        </form>
+        <button id="toggle-btn" class="mode-toggle-btn">🌙</button>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-box" id="chat-box" style="background-image: url('{{ url_for('static', filename='images.jpeg') }}');">
+      {% for msg in chat %}
+        <div class="message {{ msg.type }}">{{ msg.message|safe }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Chat Input -->
+    <form method="POST" class="chat-input-area" id="chat-form">
+      <input type="text" name="user_input" id="user_input" class="chat-input" placeholder="Type a message..." autocomplete="off" required />
+      <button type="submit" class="send-btn"><i class="bi bi-send-fill"></i></button>
+    </form>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const toggleBtn = document.getElementById("toggle-btn");
+    const body = document.body;
+    const chatInput = document.getElementById("user_input");
+    const form = document.getElementById("chat-form");
+
+    // Dark mode from localStorage
+    if (localStorage.getItem("theme") === "dark") {
+      body.classList.add("dark-mode");
+      toggleBtn.textContent = "🌞";
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      const mode = body.classList.contains("dark-mode") ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+      toggleBtn.textContent = mode === "dark" ? "🌞" : "🌙";
+    });
+
+    // Submit on Enter
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.submit();
+      }
+    });
+
+    // Scroll to bottom when new message is added
+    window.onload = function () {
+      const chatBox = document.getElementById("chat-box");
+      chatBox.scrollTop = chatBox.scrollHeight;
+    };
+  </script>
+</body>
+</html>
